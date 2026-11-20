@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Cookie } from 'lucide-react';
+import { Cookie, X } from 'lucide-react';
 
-export const CookieBanner: React.FC = () => {
+interface CookieBannerProps {
+  onOpenPrivacy?: () => void;
+}
+
+export const CookieBanner: React.FC<CookieBannerProps> = ({ onOpenPrivacy }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const cookieConsent = localStorage.getItem('cookieConsent');
     if (!cookieConsent) {
-      setIsVisible(true);
+      // Delay slightly for smooth initial page impression
+      const timer = setTimeout(() => setIsVisible(true), 1500);
+      return () => clearTimeout(timer);
     }
   }, []);
 
@@ -24,41 +30,47 @@ export const CookieBanner: React.FC = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-slate-800 text-white p-4 shadow-lg z-50 border-t-4 border-green-500">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="flex items-start gap-3 flex-1">
-            <div className="bg-slate-700 p-2 rounded-lg mt-1">
-              <Cookie className="w-5 h-5 text-green-400" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold mb-1">Cookies e Privacidade</h3>
-              <p className="text-slate-300 text-sm leading-relaxed">
-                Utilizamos cookies para melhorar sua experiência em nosso site, analisar o tráfego e personalizar conteúdo. 
-                Ao continuar navegando, você concorda com nossa{' '}
-                <button 
-                  onClick={() => {
-                    const element = document.getElementById('privacy-policy');
-                    if (element) element.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="text-green-400 hover:text-green-300 underline"
-                >
-                  Política de Privacidade
-                </button>.
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+    <div className="fixed bottom-4 left-4 right-4 sm:right-auto sm:max-w-md bg-slate-900/95 backdrop-blur-md text-white p-5 rounded-2xl shadow-2xl border border-slate-700/80 z-50 animate-in fade-in slide-in-from-bottom-5 duration-300">
+      <div className="flex items-start gap-3.5">
+        <div className="w-10 h-10 rounded-xl bg-slate-800 text-gold-400 flex items-center justify-center flex-shrink-0 mt-0.5 border border-slate-700">
+          <Cookie className="w-5 h-5 text-[#c5a059]" />
+        </div>
+
+        <div className="flex-1">
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="font-semibold text-white text-sm">Cookies e Privacidade</h3>
             <button
               onClick={handleDecline}
-              className="px-4 py-2 text-slate-300 hover:text-white border border-slate-600 hover:border-slate-500 rounded-lg transition-colors text-sm"
+              aria-label="Fechar"
+              className="text-slate-400 hover:text-white p-1"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          <p className="text-slate-300 text-xs sm:text-xs leading-relaxed mb-4">
+            Utilizamos cookies para melhorar sua experiência em nosso site, analisar o tráfego e personalizar conteúdo.
+            Ao continuar navegando, você concorda com nossa{' '}
+            <button
+              type="button"
+              onClick={onOpenPrivacy}
+              className="text-[#e5be6b] hover:underline font-medium"
+            >
+              Política de Privacidade
+            </button>
+            .
+          </p>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleDecline}
+              className="flex-1 px-3 py-2 text-xs font-semibold text-slate-300 hover:text-white border border-slate-700 hover:border-slate-500 rounded-xl transition-colors text-center"
             >
               Recusar
             </button>
             <button
               onClick={handleAccept}
-              className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm font-medium"
+              className="flex-1 px-3 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition-colors shadow-md text-center"
             >
               Aceitar Todos
             </button>

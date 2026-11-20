@@ -6,7 +6,8 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true
+    host: true,
+    port: 5174,
   },
   build: {
     rollupOptions: {
